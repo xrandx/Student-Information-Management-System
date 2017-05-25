@@ -3,53 +3,54 @@
 #include <conio.h>
 #include <string.h>
 
-	int num;//ѧ��
-	char name[16]; 	//����
-	char sex[6];	//�Ա�
-	int age;	//����
-	char birth[15];//�����1998��12��21�գ��������ְ˸����֣�3*2+8+1=15
-	char phone[23];//�ֻ���
-	char email[101];//��������
-	char adrs[101];//���50������*2�ֽ�/����=100�ֽڣ��ټ�һ��'\0'��β����һ����101�ֽ�
+typedef struct _Stu { //dssdssss 8个数据
+	int num;//学号
+	char name[16]; 	//姓名
+	char sex[6];	//性别
+	int age;	//年龄
+	char birth[15];//最多如1998年12月21日，三个汉字八个数字，3*2+8+1=15
+	char phone[23];//手机号
+	char email[101];//电子邮箱
+	char adrs[101];//最多50个汉字*2字节/汉字=100字节，再加一个'\0'结尾符，一共需101字节
 	struct _Stu *next;
 } Stu;
 
-/*���������б�*/
+/*函数声明列表*/
 
-//�˵�����
+//菜单函数
 void menu(void);
 
-//���ļ�������Ϣ�������ı�ȫ��ͷָ��ph
+//从文件载入信息至链表，改变全局头指针ph
 int readf(void);
 
-//����ָ����ָ��ʾĳ����Ϣ
+//根据指针所指显示某人信息
 void pri(Stu *p);
 
-//��ʾ������Ϣ pri��������
+//显示所有信息 pri函数复用
 void display(Stu *head);
 
-//�½���������ļ�����
+//新建链表插入文件链表
 int create(void);
 
-//�õ��ض�ѧ�ŵĽṹ��ָ��
+//得到特定学号的结构体指针
 Stu *seeint(int num);
 
-//�õ��ض������Ľṹ��ָ��
+//得到特定姓名的结构体指针
 Stu *seechar(char *nam);
 
-//����ѧ�š�������ѯѧ����Ϣ�������ظ�ѧ��ѧ�ţ�seechar() seeint() ��������
+//根据学号、姓名查询学生信息，并返回该学生学号，seechar() seeint() 函数复用
 int search(void);
 
-//����search()���ص�ѧ��,��ͨ��seeint()�ҵ�ָ�룬�޸���Ϣ
+//根据search()返回的学号,再通过seeint()找到指针，修改信息
 int modify(void);
 
-//ɾ������
+//删除函数
 int del(void);
 
-//����
+//排序
 int sort();
 
-//�ļ�����
+//文件保存
 int savef();
 
 Stu *ph = NULL;
@@ -59,9 +60,9 @@ int main()
 {
 	ph = NULL;
 	if (readf()) {
-		printf("�ļ���ʼ���ɹ�,��ӭʹ��!\n\n\n\n");
+		printf("文件初始化成功,欢迎使用!\n\n\n\n");
 	} else {
-		printf("\n���ڱ���������Ŀ¼�½�studata.txt�������!\n\n\n\n");
+		printf("\n请在本程序所在目录新建studata.txt再启动程序!\n\n\n\n");
 		getchar();
 		return 0;
 	}
@@ -73,74 +74,74 @@ int main()
 		switch (choice) {
 			case 1:
 				system("cls");
-				printf("\n=====�������ѧ����Ϣ=====\n");
+				printf("\n=====浏览所有学生信息=====\n");
 				if (ph==NULL) {
-					printf("ѧ����ϢΪ�գ��뷵�����˵��½���Ϣ\n");
+					printf("学生信息为空，请返回主菜单新建信息\n");
 				} else {
 					display(ph);
 				}
 				break;
 			case 2:
 				system("cls");
-				printf("\n=====�½�ѧ����Ϣ=====\n");
+				printf("\n=====新建学生信息=====\n");
 				if(create()) {
-					printf("��Ϣ�ɹ�����\n");
+					printf("信息成功输入\n");
 				} else {
-					printf("��Ϣ�������\n");
+					printf("信息输入结束\n");
 				}
 				break;
 			case 3:
 				system("cls");
-				printf("\n=====��ѯѧ����Ϣ=====\n");
+				printf("\n=====查询学生信息=====\n");
 				search();
 				break;
 			case 4:
 				system("cls");
-				printf("\n=====�޸�ѧ����Ϣ=====\n");
+				printf("\n=====修改学生信息=====\n");
 				if(modify())break;
 			case 5:
 				system("cls");
-				printf("\n=====ɾ��ѧ����Ϣ=====\n");
+				printf("\n=====删除学生信息=====\n");
 				if(del()) {
-					printf("\nɾ���ɹ���\n");
+					printf("\n删除成功！\n");
 					break;
 				} else { //bug
-					printf("\n�޴�ѧ����Ϣ��\n");
+					printf("\n无此学号信息！\n");
 					break;
 				}
 			case 6:
 				system("cls");
-				printf("\n=====��ѧ����������=====\n");
+				printf("\n=====按学号重新排序=====\n");
 				if(sort()) {
-					printf("ð������ɹ���\n");
+					printf("冒泡排序成功！\n");
 				} else {
-					printf("������С��2���޷�����ð������");
+					printf("结点个数小于2，无法进行冒泡排序！");
 				}
 				break;
 			case 0:
 				system("cls");
-				printf("\n=====����ѧ����Ϣ=====\n\n");
+				printf("\n=====保存学生信息=====\n\n");
 				if(savef()) {
-					printf("����ɹ�\n\n");
+					printf("储存成功\n\n");
 				} else {
-					printf("����ʧ��\n\n");
+					printf("储存失败\n\n");
 				}
-				printf("��ӭ�´�ʹ��,�ټ�!\n");
-				if (!ph) {	//�ͷ��ڴ�
+				printf("欢迎下次使用,再见!\n");
+				if (!ph) {	//释放内存
 					free(ph);
 				}
-				printf("\n�������������\n");
+				printf("\n按任意键结束。\n");
 				getch();
 				return 0;
 
 			default:
 				system("cls");
-				printf("\n�������,������ѡ�����!\n");
+				printf("\n输入错误,请重新选择操作!\n");
 				break;
 		}
 
 		while(1) {
-			printf("\n��������ɷ������˵���\n");
+			printf("\n按任意键可返回主菜单。\n");
 			if(getch()) break;
 		}
 		system("cls");
@@ -148,42 +149,42 @@ int main()
 
 }
 
-//�˵�
+//菜单
 void menu()
 {
 	printf("************************************************\n");
-	printf("*************���칤ѧ����Ϣ����ϵͳ*************\n");
+	printf("*************大徐工学生信息管理系统*************\n");
 	printf("************************************************\n\n");
-	printf("\n\n��ѡ�����:\n\n");
-	printf("1.���ѧ����Ϣ.\n");
-	printf("2.�½�ѧ����Ϣ.\n");
-	printf("3.��ѯѧ����Ϣ.\n");
-	printf("4.�޸�ѧ����Ϣ.\n");
-	printf("5.ɾ��ѧ����Ϣ.\n");
-	printf("6.��ѧ����������.\n");
-	printf("0.�˳���������Ϣ.\n");
-	printf("\n  ���ѡ���ǣ�");
+	printf("\n\n请选择操作:\n\n");
+	printf("1.浏览学生信息.\n");
+	printf("2.新建学生信息.\n");
+	printf("3.查询学生信息.\n");
+	printf("4.修改学生信息.\n");
+	printf("5.删除学生信息.\n");
+	printf("6.按学号重新排序.\n");
+	printf("0.退出并保存信息.\n");
+	printf("\n  你的选择是：");
 }
 
 
 
 
 
-//���ļ�������Ϣ�������ı�ȫ��ͷָ��ph
+//从文件载入信息至链表，改变全局头指针ph
 int readf()
 {
 	FILE *pf;
 	Stu *p,*tail;
 	pf = fopen("studata.txt", "r");
 	if(!pf) {
-		return 0; //ʧ�ܺ���ִ�����²���
+		return 0; //失败后不再执行以下操作
 	}
-	fgetc(pf);//ָ����λ
+	fgetc(pf);//指针移位
 	while(!feof(pf)) {
 		p = (Stu *)malloc(sizeof(Stu));
 		fscanf(pf,"%d%s%s%d%s%s%s%s",&p->num, p->name,p->sex ,&p->age,
 		       p->birth,p->phone, p->email,p->adrs);
-		//������Ϣ
+		//插入信息
 		if(ph == NULL) {
 			ph = p;
 			tail = p;
@@ -198,30 +199,30 @@ int readf()
 		}
 	}
 	if(!pf) {
-		fclose(pf);//�ر��ļ�
+		fclose(pf);//关闭文件
 
 	}
-	return 1;//�ɹ�
+	return 1;//成功
 }
 
-//����ָ����ʾĳ����Ϣ
+//根据指针显示某人信息
 void pri(Stu *p)
 {
 	if(p) {
-		printf("ѧ��:%d\t����:%s\t�Ա�:%s\t����:%d\t��������:%s\t�绰:%s\t�����ʼ�:%s\t��ַ:%s\t\n",
+		printf("学号:%d\t姓名:%s\t性别:%s\t年龄:%d\t出生年月:%s\t电话:%s\t电子邮件:%s\t地址:%s\t\n",
 		       p->num, p->name,p->sex,p->age,p->birth,p->phone, p->email,p->adrs);
 	} else {
-		printf("������Ϣ��Ч");
+		printf("所给信息无效");
 	}
 	return;
 }
 
 
-//��ʾ������Ϣ pri��������
+//显示所有信息 pri函数复用
 void display(Stu *head)
 {
 	Stu *p;
-	p = head;//���ı䴫��ָ���ֵ
+	p = head;//不改变传入指针的值
 	while(1) {
 		pri(p);
 		if(p->next) {
@@ -234,7 +235,7 @@ void display(Stu *head)
 	return;
 }
 
-//�õ��ض�ѧ�ŵĽṹ��ָ��
+//得到特定学号的结构体指针
 Stu *seeint(int num)
 {
 	Stu *p;
@@ -245,7 +246,7 @@ Stu *seeint(int num)
 	return p;
 }
 
-//�õ��ض�ѧ�ŵĽṹ��ָ��
+//得到特定学号的结构体指针
 Stu *seechar(char *nam)
 {
 	Stu *p;
@@ -260,31 +261,31 @@ Stu *seechar(char *nam)
 
 int create()
 {
-	Stu *p,*head,*tail;//��ʱ����ָ�롢ͷָ�롢βָ��
+	Stu *p,*head,*tail;//临时操作指针、头指针、尾指针
 	int a=1;
 	head = NULL;
 	do {
 		p = (Stu *)malloc(sizeof(Stu));
-		printf("\n������ѧ�ţ��칤ѧ��Ϊ11λ��:");
+		printf("\n请输入学号（徐工学号为11位）:");
 		scanf("%d", &p->num);
-		//�жϸü�¼�Ƿ����
+		//判断该记录是否存在
 		if (seeint(p->num)) {
-			printf("ѧ��Ϊ%d�ļ�¼�Ѵ���!\n",p->num);
+			printf("学号为%d的记录已存在!\n",p->num);
 			return 0;
 		}
-		printf("����������:");
+		printf("请输入姓名:");
 		scanf("%s",p->name);
-		printf("�������Ա��л�Ů��:");
+		printf("请输入性别（男或女）:");
 		scanf("%s",p->sex);
-		printf("����������:");
+		printf("请输入年龄:");
 		scanf("%d", &p->age);
-		printf("������������£�����1998��12��21�գ�:");
+		printf("请输入出生年月（形如1998年12月21日）:");
 		scanf("%s",p->birth);
-		printf("������绰:");
+		printf("请输入电话:");
 		scanf("%s",p->phone);
-		printf("����������ʼ���ַ:");
+		printf("请输入电子邮件地址:");
 		scanf("%s",p->email);
-		printf("�������ַ:");
+		printf("请输入地址:");
 		scanf("%s",p->adrs);
 		if(head == NULL) {
 			head = p;
@@ -294,55 +295,55 @@ int create()
 			tail = p;
 		}
 		tail->next=NULL ;
-		printf("\n����0�س���ֹ����������ֵ�س�����\n");
+		printf("\n输入0回车终止，输入任意值回车继续\n");
 		scanf("%d", &a);
 	} while(a!=0);
-	//����ph��head��״̬����������
+	//根据ph和head的状态，链接链表
 	if(head) {
 		if(ph) {
 			tail->next=ph;
 			ph=head;
-			return 1;//ph��head����Ϊ��ʱ���ӣ�����1
+			return 1;//ph、head都不为空时连接，返回1
 		} else {
 			ph=head;
-			return 1;//phΪ�ա�head��Ϊ��ʱ��ֵ������1
+			return 1;//ph为空、head不为空时赋值，返回1
 		}
 	} else {
-		return 0;//ph��headΪ��ʱ����0��ph���ա�headΪ��ʱ����0
+		return 0;//ph、head为空时返回0，ph不空、head为空时返回0
 	}
 }
 
 
 
 
-//����ѧ�š�������ѯѧ����Ϣ�������ظ�ѧ��ѧ��  seechar seeint ��������
+//根据学号、姓名查询学生信息，并返回该学生学号  seechar seeint 函数复用
 int search()
 {
 	Stu *p;
 	int m=0, n;
 	char nam[16];
 	while(m!=1&&m!=2) {
-		printf("\n\n��������Լ�����\n1.��ѧ�Ų���\n2.����������\n");
+		printf("\n\n输入序号以继续：\n1.按学号查找\n2.按姓名查找\n");
 		scanf("%d", &m);
 	}
 	if(m==1) {
-		printf("������Ҫ��ѯ��ѧ��:");
+		printf("请输入要查询的学号:");
 		scanf("%d", &n);
 		if(seeint(n)) {
 			pri(seeint(n));
 		} else {
-			printf("���޴���");
+			printf("查无此人");
 		}
 	}
 	if(m==2) {
-		printf("������Ҫ��ѯ������:");
+		printf("请输入要查询的姓名:");
 		scanf("%s",nam);
 		if(seechar(nam)) {
 			pri(seechar(nam));
 		} else {
-			printf("���޴���");
+			printf("查无此人");
 		}
-	}/*Ϊ����modify��׼�� */
+	}/*为下面modify做准备 */
 	if(seeint(n)) {
 		p=seeint(n);
 		return p->num;
@@ -356,73 +357,73 @@ int search()
 
 int modify()
 {
-	int choice; //�û�ѡ�����
+	int choice; //用户选择序号
 	Stu *p=seeint(search());
 	if (p == NULL) {
-		printf("�����ڴ�ѧ�ŵļ�¼!\n");
+		printf("不存在此学号的记录!\n");
 		return 1;
 	}
-	printf("0.�޸�ѧ��.\n");
-	printf("1.�޸�����.\n");
-	printf("2.�޸��Ա�.\n");
-	printf("3.�޸�����.\n");
-	printf("4.�޸ĳ�������.\n");
-	printf("5.�޸ĵ绰.\n");
-	printf("6.�޸ĵ����ʼ���ַ:.\n");
-	printf("7.�޸ĵ�ַ.\n");
-	printf("��ѡ��Ҫ�޸ĵ���Ϣ:");
+	printf("0.修改学号.\n");
+	printf("1.修改姓名.\n");
+	printf("2.修改性别.\n");
+	printf("3.修改年龄.\n");
+	printf("4.修改出生年月.\n");
+	printf("5.修改电话.\n");
+	printf("6.修改电子邮件地址:.\n");
+	printf("7.修改地址.\n");
+	printf("请选择要修改的信息:");
 	scanf("%d", &choice);
 	switch (choice) {
 		case 0:
-			printf("������ѧ��:");
+			printf("请输入学号:");
 			scanf("%d",&p->num);
 			break;
 		case 1:
-			printf("����������:");
+			printf("请输入姓名:");
 			scanf("%s",p->name);
 			break;
 		case 2:
-			printf("�������Ա��л�Ů��:");
+			printf("请输入性别（男或女）:");
 			scanf("%s",p->sex);
 			break;
 		case 3:
-			printf("����������:");
+			printf("请输入年龄:");
 			scanf("%d", &p->age);
 			break;
 		case 4:
-			printf("������������£�����1998��12��21�գ�:");
+			printf("请输入出生年月（形如1998年12月21日）:");
 			scanf("%s",p->birth);
 			break;
 		case 5:
-			printf("������绰:");
+			printf("请输入电话:");
 			scanf("%s",p->phone);
 			break;
 		case 6:
-			printf("����������ʼ���ַ:");
+			printf("请输入电子邮件地址:");
 			scanf("%s",p->email);
 			break;
 		case 7:
-			printf("�������ַ:");
+			printf("请输入地址:");
 			scanf("%s",p->adrs);
 			break;
 		default:
-			printf("�������������ѡ�����!\n");
+			printf("输入错误，请重新选择操作!\n");
 	}
 	return 1;
 }
 
 int del()
 {
-	Stu *see,*p,*pre;//pΪ��Ӧѧ�ŵ�ָ�룬pre�Ƕ�Ӧѧ�ŵ�ǰһ����ָ��
+	Stu *see,*p,*pre;//p为对应学号的指针，pre是对应学号的前一个的指针
 	int num;
-	printf("������Ҫɾ����Ϣ��ѧ��:\n");
+	printf("请输入要删除信息的学号:\n");
 	scanf("%d", &num);
 	if(!seeint(num)) {
 		return 0;
 	}
-	p = ph;//��ͷ��ʼ����
-	if(!p) return 0;//����Ϊ�����˳�
-	//��һ��ΪҪɾ������ɾ������
+	p = ph;//从头开始遍历
+	if(!p) return 0;//链表为空则退出
+	//第一个为要删除结点的删除方法
 	if(p->num==num) {
 		if(!p->next) {
 			ph=NULL;
@@ -434,7 +435,7 @@ int del()
 			return 1;
 		}
 	}
-	//�ڶ����Լ�֮��ΪҪɾ������ɾ������
+	//第二个以及之后为要删除结点的删除方法
 	while(p->num!=num) {
 		pre=p;
 		p=p->next;
@@ -454,52 +455,52 @@ int sort()
 	}
 	if(count<=1) {
 		return 0;
-	}//�����������ż���
+	}//存在两个结点才继续
 	head=(Stu*)malloc(sizeof(Stu));
-	head->next=ph;//�������ͷ���ӿս��
-	n=count*(count-1)/2;//��������������
+	head->next=ph;//将链表的头部加空结点
+	n=count*(count-1)/2;//计算遍历排序次数
 	for(i=1; i<=n; i++) {
-		prr=head;//prr���ڵ�һ����� ��Ϊ�գ�
-		pre=head->next;	//pre���ڵڶ������
-		p=head->next->next;//p���ڵ��������
+		prr=head;//prr放在第一个结点 （为空）
+		pre=head->next;	//pre放在第二个结点
+		p=head->next->next;//p放在第三个结点
 		while(1) {
-			//�Ƚ�pre��ָ��p��ָ�Ĵ�С����������
+			//比较pre所指与p所指的大小并决定交换
 			if((pre->num)>(p->num)) {
 				temp=p->next;
 				prr->next=p;
 				p->next=pre;
 				pre->next=temp;
-				//�ص�ԭ����˳��
+				//回到原来的顺序
 				temp=pre;
 				pre=p;
 				p=temp;
 			}
 
-			//����ָ����λ
-			if(!p->next) break;//�����һ���������ֹ
+			//三个指针移位
+			if(!p->next) break;//若到最后一个结点则终止
 			p=p->next;
 			pre=pre->next;
 			prr=prr->next;
 		}
 
 	}
-	ph=head->next;//ɾ���ս��
+	ph=head->next;//删除空结点
 	free(head);
-	printf("���������Ϊ%d,\n",count);
+	printf("排序结点个数为%d,\n",count);
 	return 1;
 }
 
 
-//���ڴ��е���Ϣ�����ļ�
+//将内存中的信息传入文件
 int savef()
 {
 	FILE *pf;
 	Stu *p;
 	pf = fopen("studata.txt", "w");
 	if(!pf) {
-		return 0; //ʧ�ܺ���ִ������
+		return 0; //失败后不再执行以下
 	}
-	p=ph;//��ͷ��ʼ
+	p=ph;//从头开始
 	while (p) {
 		fprintf(pf," %d\t%s\t%s\t%d\t%s\t%s\t%s\t%s\t",p->num, p->name,
 		        p->sex , p->age, p->birth,p->phone, p->email,p->adrs);
