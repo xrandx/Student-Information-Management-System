@@ -1,5 +1,5 @@
 # Student-Information-Management-System
-![visitors](https://visitor-badge.glitch.me/Student-Information-Management-System?page_id=xrandx)
+![visitor badge](https://visitor-badge.glitch.me/badge?page_id=xrandx.Student-Information-Management-System)
 
 Student-information-management-system school project   学生信息管理系统（课程设计）
 
